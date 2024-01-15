@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Pedido de Compra</title>
+    <!-- Adicione a biblioteca jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* Adicione um estilo para a descrição no final da página */
+        .footer-description {
+            margin-top: 30px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Formulário de Pedido de Compra</h2>
+    <form id="purchaseForm">
+        <label for="object">Objeto:</label>
+        <input type="text" id="object" name="object" required>
+
+        <label for="value">Valor Médio:</label>
+        <input type="text" id="value" name="value" required>
+
+        <label for="description">Descrição:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+
+        <label for="applicationResponsible">Responsável pela Aplicação:</label>
+        <input type="text" id="applicationResponsible" name="applicationResponsible" required>
+
+        <label for="approvalResponsible">Responsável pela Aprovação:</label>
+        <input type="text" id="approvalResponsible" name="approvalResponsible" required>
+
+        <button type="button" onclick="generatePDF()">Gerar PDF</button>
+    </form>
+
+    <!-- Descrição no final da página -->
+    <div class="footer-description">
+        <p>WC Projetos : Contato (31) 97163-3287</p>
+    </div>
+</div>
+
+<script>
+    function generatePDF() {
+        const form = document.getElementById("purchaseForm");
+        const formData = new FormData(form);
+
+        const headerText = 'WC Projetos';
+        const pdfContent = `
+            Objeto: ${formData.get("object")}
+            -----------------------------------
+            Valor Médio: ${formData.get("value")}
+            -----------------------------------
+            Descrição: ${formData.get("description")}
+            -----------------------------------
+            Responsável pela Aplicação: ${formData.get("applicationResponsible")}
+            -----------------------------------
+            Responsável pela Aprovação: ${formData.get("approvalResponsible")}
+        `;
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+
+        // Define o fundo do PDF (de cinza para branco)
+        pdf.setFillColor(220, 220, 220); // Cinza claro
+        pdf.rect(0, 0, pdf.internal.pageSize.width, pdf.internal.pageSize.height, 'F');
+
+        // Adiciona cabeçalho ao PDF
+        pdf.setFontSize(18);
+        pdf.text(headerText, 20, 20);
+
+        // Adiciona o conteúdo formatado abaixo do cabeçalho
+        pdf.setFontSize(12);
+        pdf.text(pdfContent, 20, 40);
+
+        // Adiciona uma linha horizontal após o conteúdo
+        pdf.setLineWidth(0.5);
+        pdf.line(20, pdf.internal.pageSize.height - 40, 190, pdf.internal.pageSize.height - 40);
+
+        // Adiciona a descrição no final da página
+        pdf.setFontSize(10);
+        pdf.text('WC Projetos : Contato (31) 97163-3287', 20, pdf.internal.pageSize.height - 30);
+
+        // Adiciona as linhas para assinatura
+        pdf.setFontSize(12);
+        pdf.text('Assinatura de Solicitação', 20, pdf.internal.pageSize.height - 20);
+        pdf.line(20, pdf.internal.pageSize.height - 10, 120, pdf.internal.pageSize.height - 10); // Linha para assinatura de Solicitação
+
+        pdf.text('Assinatura de Aprovação', 130, pdf.internal.pageSize.height - 20);
+        pdf.line(130, pdf.internal.pageSize.height - 10, 190, pdf.internal.pageSize.height - 10); // Linha para assinatura de Aprovação
+
+        pdf.save("pedido_compra.pdf");
+    }
+</script>
+
+</body>
+</html>
